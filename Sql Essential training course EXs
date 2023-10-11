@@ -1,0 +1,20 @@
+top 5 genres with highes average track duration
+
+
+/* This is a comment */
+select 
+	g.name as Genre/*, c.playlistid, d.name ,*/ ,avg(t.milliseconds) as AverageDuration
+from 
+	track as t 
+left join Genre as g on t.genreid = g.genreid
+group by g.name
+order by AverageDuration DESC
+limit 5
+/*left join PlaylistTrack as c on a.trackid = c.trackid
+left join Playlist as d on c.playlistid = d.playlistid
+order by 
+	firstname ASC,
+    lastname desc*/
+
+
+
