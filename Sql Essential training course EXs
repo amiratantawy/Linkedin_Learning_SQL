@@ -16,5 +16,37 @@ order by
 	firstname ASC,
     lastname desc*/
 
+customers with highest total purchase amount
+
+
+/* This is a comment */
+select 
+	g.name as Genre/*, c.playlistid, d.name ,*/ ,avg(t.milliseconds) as AverageDuration
+from 
+	track as t 
+left join Genre as g on t.genreid = g.genreid
+group by g.name
+order by AverageDuration DESC
+limit 5
+/*left join PlaylistTrack as c on a.trackid = c.trackid
+left join Playlist as d on c.playlistid = d.playlistid
+order by 
+	firstname ASC,
+    lastname desc*/
+
+
+
+top employees with highest number of customers
+
+
+select c.supportrepid as EmployeeID,e.firstname,e.lastname,c.NumberOfCustomers
+from (select supportrepid,count(customerid) as NumberOfCustomers
+      from Customer
+      GROUP by supportrepid) as C
+      
+left join Employee e on e.employeeid = c.supportrepid
+order by c.NumberOfCustomers desc
+
+
 
 
