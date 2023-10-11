@@ -1,0 +1,165 @@
+Basic Queries 
+
+
+list of customers sorted in ascending order
+
+SELECT firstname,lastname,email
+FROM Customers
+order by lastname,firstname
+
+
+
+Retrieve the two most recent reservations
+
+SELECT r.date , r.partysize, c.firstname,c.lastname,c.email  FROM reservations r
+inner join customers c
+on c.CUSTOMERID = r.CUSTOMERID
+order by r.date desc
+limit 2
+
+
+retrieve dishes with price from 8 to 9
+
+-- SQL request(s)​​​​​​‌​‌​​‌​‌​‌‌‌‌‌​​‌​‌‌‌​‌​​ below
+SELECT dishid,name,price
+FROM Dishes
+where price between 8 and 9
+order by name
+
+
+
+find 3 customers with the most orders
+
+-- SQL request(s)​​​​​​‌​‌​​‌​‌‌​​​​‌‌‌​​​‌​​‌​​ below
+SELECT Customers.CustomerID, Customers.FirstName, Customers.LastName ,count(o.orderid) as Customerordercount
+FROM Customers
+inner join orders o on o.customerid=Customers.customerid
+group by Customers.CustomerID, Customers.FirstName, Customers.LastName 
+order by Customerordercount desc
+limit 3
+
+
+
+list of customers who live in city starts with R
+
+-- SQL request(s)​​​​​​‌​‌​​‌​‌‌​​​​‌‌‌​​‌​​​​​‌ below
+SELECT Customers.firstname,Customers.lastname,Customers.city
+FROM Customers 
+where Customers.city like 'R%'
+order by Customers.city
+
+
+
+find the most expensive order
+
+-- SQL request(s)​​​​​​‌​‌​​‌​‌‌​​​​‌‌‌​​‌​​‌‌​​ below
+SELECT o.orderid , Sum(d.price) as orderTotal
+FROM Orders o
+left join ordersdishes od on od.orderid=o.orderid
+left join dishes d on d.dishid = od.dishid
+group by o.ORDERID
+order by orderTotal desc
+limit 1
+
+
+
+find the average of all orders
+
+-- SQL request(s)​​​​​​‌​‌​​‌​‌‌​​​​‌‌‌​​‌‌​​​‌‌ below
+/*SELECT avg(d.price) as orderAverage
+FROM Orders o
+left join ordersdishes od on od.orderid=o.orderid
+left join dishes d on d.dishid = od.dishid
+*/
+select avg(sub.orderTotal) from (
+SELECT o.orderid , Sum(d.price) as orderTotal
+FROM Orders o
+left join ordersdishes od on od.orderid=o.orderid
+left join dishes d on d.dishid = od.dishid
+group by o.ORDERID) sub
+
+/*** intermediate Queries *******/
+
+list of customers who spent over 450$
+
+SELECT o.Customerid ,c.firstname ,c.lastname, sum(d.price) as TotalSpend
+from orders o 
+inner join customers c on o.Customerid = c.Customerid
+left join ordersdishes OD on o.orderid = od.orderid
+inner join dishes d on d.DISHID = od.dishid
+group by o.Customerid
+having TotalSpend >450
+order by TotalSpend desc
+
+
+
+list of items of each order seperated by comma
+
+
+-- SQL request(s)​​​​​​‌​‌​​‌​‌​‌‌​​​‌‌‌‌‌​​​​​​ below
+SELECT o.orderID ,
+group_concat (d.name order by d.name) as items
+
+from dishes d 
+join ordersdishes od on d.DISHID = od.dishid
+join orders o on o.ORDERID = od.orderid
+where o.orderdate >= '2022-05-01'
+group by o.ORDERID
+
+
+
+list of dates that pizza was ordered in,and how many pizza
+
+-- SQL request(s)​​​​​​‌​‌​​‌​‌​‌‌​​​‌‌‌‌‌‌‌​​‌​ below
+SELECT  count(o.orderid) as NumSold , cast(o.orderdate as date) as Day
+FROM Orders o
+join ordersdishes od on od.ORDERID = o.ORDERID
+join dishes d on d.DISHID = od.DISHID
+where d.name = 'Handcrafted Pizza'
+group by day 
+order by day
+
+
+calculate sale price based on specific criteria
+
+-- SQL request(s)​​​​​​‌​‌​​‌​‌​‌‌​​‌​​​​‌‌‌​​‌‌ below
+SELECT 
+Name Dishname ,
+price OriginalPrice , 
+
+case  
+    when price <7 then '5%'
+    when price between 7 and 10 then '10%'
+    else '15%'
+end DiscountPercent,
+
+Round ( 
+    price * (
+        1- case  
+        when price <7 then .05
+        when price between 7 and 10 then .1
+        else .15
+        end ),2
+) as DiscountedPrice
+FROM Dishes
+order by dishname
+
+;
+
+
+
+returns fields in a specific format for vendor integration
+
+SELECT 
+
+lpad(EMPLOYEEID,5,0) ID,
+concat(LASTNAME,', ' , firstname)    Name,
+Lower(concat(
+    substring(FIRSTNAME,1,1),
+    substring(LASTNAME,1,7)))  Login,
+concat (USERNAME,'@nadias-garden.com')  Email
+FROM Employees
+order by Name ;
+
+
+
