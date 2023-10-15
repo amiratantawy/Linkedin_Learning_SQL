@@ -1,0 +1,6 @@
+select min(admission_Date) over(partition by species) from species will return a list of min admission date for every species
+
+framing Rows and ranges 
+max(name) over (partition by species order by name rows between unbounded precding and current row)
+
+
